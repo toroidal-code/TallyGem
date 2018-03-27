@@ -1,8 +1,8 @@
 require 'minitest/autorun'
-require 'NetTally/quest'
+require 'TallyGem/quest'
 
 class TestQuest < Minitest::Test
-  Quest = NetTally::Quest
+  Quest = TallyGem::Quest
   def setup
     @quest = Quest.new
   end
@@ -79,4 +79,37 @@ class TestQuest < Minitest::Test
     @quest.thread_name = "http://forums.sufficientvelocity.com/threads/renascence-a-\u200bhomura-quest.10402/page-221#post-19942121"
     assert_equal 'http://forums.sufficientvelocity.com/threads/renascence-a-homura-quest.10402/', @quest.thread_name
   end
+
+  def test_read_to_end_of_thread_no_threadmarks_zero_end
+    @quest.end_post = 0
+    assert_equal true, @quest.read_to_end_of_thread
+  end
+
+  def test_read_to_end_of_thread_no_threadmarks_pos_end
+    @quest.end_post = 100
+    assert_equal false, @quest.read_to_end_of_thread
+  end
+
+  def test_read_to_end_of_thread_threadmarks_zero_end
+    @quest.end_post = 0
+    @quest.check_for_last_threadmark = true
+    assert_equal true, @quest.read_to_end_of_thread
+  end
+
+  def test_read_to_end_of_thread_threadmarks_pos_end
+    @quest.end_post = 100
+    @quest.check_for_last_threadmark = true
+    assert_equal false, @quest.read_to_end_of_thread
+  end
+
+  def test_read_to_end_of_thread_threadmarks_found_threadmark
+    @quest.end_post = 100
+    @quest.check_for_last_threadmark = true
+    assert_equal false, @quest.read_to_end_of_thread
+  end
+
+  # TODO: Forum adapter
+  # https://github.com/Kinematics/TallyGem/blob/VS2017/TallyGem.Test/QuestTests.cs#L424
+
+
 end

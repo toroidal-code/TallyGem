@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe NetTally do
+describe TallyGem do
   it 'has a version number' do
-    expect(NetTally::VERSION).not_to be nil
+    expect(TallyGem::VERSION).not_to be nil
   end
 end

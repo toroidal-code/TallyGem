@@ -2,7 +2,7 @@ require 'uri'
 require 'English'
 
 
-module NetTally
+module TallyGem
   class Quest
     PAGE_NUMBER_REGEX = Regexp.new '^(?<base>.+?)(&?page[-=]?\d+)?(&p=?\d+)?(#[^/]*)?(unread)?$'
     DISPLAY_NAME_REGEX = Regexp.new '(?<display_name>[^/]+)(/|#[^/]*)?$'

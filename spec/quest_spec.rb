@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-Quest = NetTally::Quest
+Quest = TallyGem::Quest
 
 describe Quest do
   context 'display_name' do

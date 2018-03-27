@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+require 'bundler/setup'
+require 'slop'
+require 'TallyGem'
+
+opts = Slop.parse do |o|
+  o.banner = "usage: #{$0} [options] <thread-url>"
+  o.int '-s', '--start', 'the post number to start with'
+  o.int '-e', '--end', 'the post number to end with'
+  o.on '-v', '--version', 'print the version' do
+    puts TallyGem::VERSION
+    exit
+  end
+  o.on '-h', '--help' do
+    puts o
+    exit
+  end
+end
+
+if opts.args.empty?
+  puts opts
+  exit(-1)
+end

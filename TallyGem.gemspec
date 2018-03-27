@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'NetTally/version'
+require 'TallyGem/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'NetTally'
-  spec.version       = NetTally::VERSION
+  spec.name          = 'TallyGem'
+  spec.version       = TallyGem::VERSION
   spec.authors       = ['Katherine Whitlock']
   spec.email         = ['toroidalcode@gmail.com']
 
   spec.summary       = %q{A tallying program for quests}
-    spec.homepage      = 'https://github.com/toroidal-code/NetTally-rb.'
+    spec.homepage      = 'https://github.com/toroidal-code/TallyGem-rb.'
   spec.license       = 'GPL2'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
@@ -30,4 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'minitest'
+  spec.add_dependency 'slop'
+  spec.add_dependency 'contracts'
 end
