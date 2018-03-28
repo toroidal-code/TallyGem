@@ -1,8 +1,9 @@
 require 'parslet'
 
+module TallyGem
 class PostParser < Parslet::Parser
   rule(:eof) { any.absent? }
-  rule(:ws)  { str(' ').repeat.ignore }
+  rule(:ws?)  { str(' ').repeat.ignore }
 
   rule(:cr)        { str("\n").ignore }
   rule(:eol)       { eof | cr }
@@ -10,29 +11,27 @@ class PostParser < Parslet::Parser
   rule(:line)      { cr | line_body >> eol }
 
   rule(:selection) { str('[') >> (str('x') | str('X') | str('✓') | str('✔')) >> str(']') }
-  rule(:rank)      { str('[') >> match('[0-9]').repeat(1).as(:rank) >> str(']') }
+  rule(:rank)      { str('[') >> match('[1-9]').repeat(1).as(:rank) >> str(']') }
 
   rule(:task)      { str('[') >> (str(']').absent? >> any).repeat(1).as(:task) >> str(']') }
 
-  rule(:vote_body) { selection >> ws >> task.maybe >> line_body.as(:vote_text) >> eol }
-  rule(:vote_line) { cr | vote_body }
+  rule(:vote_body) { ws? >> task.maybe >> line_body.as(:vote_text) >> eol }
 
-  def subvote(depth)
-    dashes = (ws >> str('-')).repeat(depth)
-    dash_count = dashes.min
-
-    dashes >> vote_body >>
-    dynamic do |src,ctxt|
-      (subvote(dash_count + 1) |
-        (str('-').absent? >> selection.absent? >> line.ignore)).repeat.as(:subvotes)
+  def plan_vote(depth)
+    dashes = (ws? >> str('-')).repeat(depth).capture(:dashes)
+    dashes >> selection >> vote_body >> dynamic do |src,ctx|
+      dash_count = ctx.captures[:dashes].size
+      plan_vote(dash_count + 1).repeat.as(:subvotes)
     end
   end
 
-  rule(:plan)        { vote_body >> subvote(1).repeat.as(:subvotes) }
-  rule(:ranked_vote) { rank >> task.maybe >> line_body.as(:vote_text) }
+  rule(:ranked_vote) { rank >> vote_body }
 
-  rule(:vote) { ranked_vote | plan }
-  rule(:post) { vote.repeat }
+  rule(:vote) { ranked_vote | plan_vote(0) }
+
+  # there can still be some lines that *look* like votes but aren't
+  # so we need the `line.ignore` fallback to not fail parsing them.
+  rule(:post) { (vote | line.ignore).repeat }
   root(:post)
 
   ###############
@@ -45,9 +44,12 @@ class PostParser < Parslet::Parser
       .reject { |s| s[0] != '-' && s[0] != '[' } # filter non-votes out
       .join("\n")
 
-    # parse the vote
+    # Fail fast
+    return [] if str.empty?
+
+    # parse the vote content
     result = root.parse(str)
-    result = [] if result.empty?
+    result = [] if result.nil? || result.empty?
     convert(result)
     result
   end
@@ -60,4 +62,5 @@ class PostParser < Parslet::Parser
       hm[:subvotes] = convert(hm[:subvotes]) if hm.has_key?(:subvotes) && hm[:subvotes].is_a?(Array)
     end
   end
+end
 end

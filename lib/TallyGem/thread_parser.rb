@@ -1,43 +1,48 @@
 require 'open-uri'
 require 'nokogiri'
 
-require_relative 'Posts/parser'
 require_relative 'Posts/post'
 
+module TallyGem
+  def page_num(post_num)
+    posts_per_page = 25
+    ((post_num - 1) / posts_per_page) + 1
+  end
 
-def page_num(post_num)
-  posts_per_page = 25
-  ((post_num - 1) / posts_per_page) + 1
-end
+  def base_thread_url(url)
+    idx = url.split('/').find_index('threads')
+    url.split('/')[0..idx + 1].join('/')
+  end
 
-def base_thread_url(url)
-  idx = url.split('/').find_index('threads')
-  url.split('/')[0..idx + 1].join('/')
-end
+  def render_vote(vote, depth=0)
+    rv = "-" * depth
+    rv << "[X]"
+    rv << "[#{vote[:task]}]" if vote.has_key?(:task)
+    rv << vote[:vote_text] << "\n"
+    vote[:subvotes].each { |sv| rv << render_vote(sv, depth+1) } if vote.has_key?(:subvotes)
+    rv
+  end
 
-def render_vote(vote, depth=0)
-  rv = "-" * depth
-  rv << "[X]"
-  rv << "[#{vote[:task]}]" if vote.has_key?(:task)
-  rv << vote[:vote_text] << "\n"
-  vote[:subvotes].each { |sv| rv << render_vote(sv, depth+1) } if vote.has_key?(:subvotes)
-  rv
+  module_function :page_num, :base_thread_url, :render_vote
 end
 
 url = "https://forums.sufficientvelocity.com/threads/beyond-our-reach-the-stars-did-form.45755/page-9#post-10407233"
 start_num = 205
 posts_per_page = 25
 
-thread_url = base_thread_url(url)
-start_page_num = page_num(start_num)
+thread_url = TallyGem::base_thread_url(url)
+start_page_num = TallyGem::page_num(start_num)
 firstpage = Nokogiri::XML(open("#{thread_url}/page-#{start_page_num}"))
 
 end_num = nil
 # 'Page x of y' => Int(y)
-end_page_num = !end_num.nil? ? page_num(end_num) : firstpage.css('.pageNavHeader').text.split.last.to_i
+end_page_num = !end_num.nil? ? TallyGem::page_num(end_num) : firstpage.css('.pageNavHeader').text.split.last.to_i
 
 posts = (start_page_num..end_page_num).collect do |page_num|
-  page = Nokogiri::XML(open("#{thread_url}/page-#{page_num}"))
+  url = "#{thread_url}/page-#{page_num}"
+  puts "Fetching #{url}"
+  page = Nokogiri::XML(open(url))
+
   page.css('.messageList .message').collect do |message|
     # replace imgs with alttext
     message.css('img').each { |img| img.replace("#{img['alt']}") }
@@ -52,7 +57,7 @@ posts = (start_page_num..end_page_num).collect do |page_num|
     id = message['id']
     author = message['data-author']
     text = message.css('.messageContent article .messageText').text.strip
-    Post.new(id, number, author, text)
+    TallyGem::Post.new(id, number, author, text)
   end
 end.flatten.reject { |p| p.nil? || p.votes.empty? }
 
@@ -91,7 +96,7 @@ tally.each_with_index do |(task,votes),idx|
   sb << "Task: #{task}\n" if task
   votes = votes.sort_by { |_,v| v[:posts].size }.reverse!
   votes.each do |_,vote|
-    sb << render_vote(vote[:vote]) +
+    sb << TallyGem::render_vote(vote[:vote]) +
       "No. of Votes: #{vote[:posts].size}\n"
   end
   output << sb.join("\n")
@@ -99,4 +104,3 @@ end
 
 output << "\n\n" << "Total No. of Voters: #{total_voters}" << "\n\n"
 puts output
-

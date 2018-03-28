@@ -1,3 +1,4 @@
+require_relative 'parser'
 
 module TallyGem
   class Post
