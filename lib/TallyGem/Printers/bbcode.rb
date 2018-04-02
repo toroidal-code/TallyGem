@@ -1,3 +1,4 @@
+require_relative '../version'
 require_relative 'common'
 
 module TallyGem::Printers
@@ -7,7 +8,7 @@ module TallyGem::Printers
       def render(tally, compact: false)
         output = []
         output << tally.quest.to_s
-        output << invisitext('##### TallyGem v0.1')
+        output << invisitext("##### TallyGem v#{TallyGem::VERSION}")
         tally.result.each_with_index do |(task, votes), idx|
           sb = []
           sb << horizontal_rule('---------------------------------------------------') + "\n" if idx > 0
