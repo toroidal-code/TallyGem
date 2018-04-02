@@ -1,17 +1,21 @@
 module TallyGem
   class Tally
     attr_reader :quest, :result, :total_voters
+
     def initialize(quest)
       @quest        = quest
       @result       = nil
       @total_voters = 0
     end
 
+    # TODO: Plans and nominations
     def run
       return @result unless @result.nil?
 
+      # remove any posts that don't have votes
       posts = @quest.posts.reject { |p| p.votes.empty? }
 
+      # filter so that only the latest vote post by the author exists
       posts = posts.each_with_object({}) do |post, author_map|
         if !author_map.key?(post.author) || post.id > author_map[post.author].id
           author_map[post.author] = post
@@ -32,6 +36,7 @@ module TallyGem
 
     private
 
+    # TODO: change this so that we can choose per-block/per-line/per-tree votes
     def squash_and_clean(tree)
       return if tree.empty?
       tree             = tree.clone
