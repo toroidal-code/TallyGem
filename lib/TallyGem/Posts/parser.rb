@@ -32,9 +32,11 @@ module TallyGem
 
     rule(:vote) { ranked_vote | plan_vote(0) }
 
+    rule(:tally) { line.repeat >> str('#####') >> line.repeat }
+
     # there can still be some lines that *look* like votes but aren't
     # so we need the `line.ignore` fallback to not fail parsing them.
-    rule(:post) { (vote | line.ignore).repeat }
+    rule(:post) { tally.ignore | (vote | line.ignore).repeat }
     root(:post)
 
     ###############

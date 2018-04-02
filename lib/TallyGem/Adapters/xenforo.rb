@@ -30,7 +30,6 @@ module TallyGem::Adapters
       page_urls = (start_page_num..end_page_num).collect {|page_num| "#{@thread_url}/page-#{page_num}"}
 
       page_posts = page_urls.collect do |url|
-        puts "Fetching #{url}"
         page = Nokogiri::XML(open(url))
         page.css('.messageList .message').collect do |message|
           # replace imgs with alt-text
