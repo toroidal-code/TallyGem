@@ -7,6 +7,7 @@ opts = Slop.parse do |o|
   o.banner = "usage: #{$0} [options] <thread-url>"
   o.int '-s', '--start', 'the post number to start with'
   o.int '-e', '--end', 'the post number to end with'
+  o.bool '-k', '--last-threadmark', 'auto-detect starting post based on last threadmark (default: true)', default: true
   o.on '-v', '--version', 'print the version' do
     puts TallyGem::VERSION
     exit
@@ -21,3 +22,16 @@ if opts.args.empty?
   puts opts
   exit(-1)
 end
+
+adapter = begin
+  hash_opts = opts.to_hash
+  o = {}
+  o[:start_num] = hash_opts[:start] if hash_opts.key? :start && !hash_opts[:start].nil?
+  o[:end_num] = hash_opts[:end] if hash_opts.key?(:end) && !hash_opts[:end].nil?
+  o[:last_threadmark] = hash_opts[:last_threadmark] if hash_opts.key? :last_threadmark
+  TallyGem::Adapters::Xenforo.new(opts.args.first,o)
+end
+
+tally = TallyGem::Tally.new adapter
+tally.run
+puts tally.render

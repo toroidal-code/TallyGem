@@ -1,5 +1,5 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'TallyGem/version'
 
@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Katherine Whitlock']
   spec.email         = ['toroidalcode@gmail.com']
 
-  spec.summary       = %q{A tallying program for quests}
-    spec.homepage      = 'https://github.com/toroidal-code/TallyGem-rb.'
+  spec.summary       = 'A tallying program for quests'
+  spec.homepage      = 'https://github.com/toroidal-code/TallyGem'
   spec.license       = 'GPL2'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
@@ -27,9 +27,11 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 1.10'
+  spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'minitest'
-  spec.add_dependency 'slop'
   spec.add_dependency 'contracts'
+  spec.add_dependency 'nokogiri'
+  spec.add_dependency 'parslet'
+  spec.add_dependency 'slop'
 end
