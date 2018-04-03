@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 require 'bundler/setup'
 require 'slop'
-require 'TallyGem'
+require 'tallygem'
 
 opts = Slop.parse do |o|
-  o.banner = "usage: #{$PROGRAM_NAME} [options] <thread-url>"
+  o.banner = "usage: #{File.basename($PROGRAM_NAME)} [options] <thread-url>"
   o.int '-s', '--start', 'the post number to start with'
   o.int '-e', '--end', 'the post number to end with'
   o.bool '-k', '--last-threadmark', 'auto-detect starting post based on last threadmark (default: true)', default: true

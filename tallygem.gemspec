@@ -1,10 +1,10 @@
 
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'TallyGem/version'
+require 'tallygem/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'TallyGem'
+  spec.name          = 'tallygem'
   spec.version       = TallyGem::VERSION
   spec.authors       = ['Katherine Whitlock']
   spec.email         = ['toroidalcode@gmail.com']
@@ -22,8 +22,8 @@ Gem::Specification.new do |spec|
   end
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  spec.bindir        = 'exe'
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.bindir        = 'bin'
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 1.10'

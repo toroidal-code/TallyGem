@@ -1,7 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 
-require_relative '../Posts/post'
+require_relative '../posts/post'
 
 module TallyGem::Adapters
   class Xenforo

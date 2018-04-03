@@ -1,0 +1,5 @@
+require 'tallygem/version'
+require 'tallygem/tally'
+require 'tallygem/adapters/xenforo'
+require 'tallygem/printers/plain'
+require 'tallygem/printers/bbcode'
