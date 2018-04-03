@@ -42,7 +42,8 @@ module TallyGem::Adapters
           number = message.css('.postNumber').text.delete('#').to_i
           next if number < @start_num || number > (@end_num || end_page_num * POSTS_PER_PAGE)
 
-          id     = message['id']
+          id_str = message['id']
+          id     = id_str =~ /post-([0-9]+)/ ? $~.captures.first.to_i : id_str
           author = message['data-author']
           text   = message.css('.messageContent article .messageText').text.strip
           TallyGem::Post.new(id, number, author, text)

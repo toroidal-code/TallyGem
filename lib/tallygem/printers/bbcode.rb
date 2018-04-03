@@ -16,13 +16,13 @@ module TallyGem::Printers
           votes = votes.sort_by { |_, v| v[:posts].size }.reverse!
           votes.each do |_, vote|
             sb << Common.render_vote(vote[:vote])
-            sb << bold("No. of Votes: #{vote[:posts].size}")
-            sb << spoiler(vote[:posts].collect(&:author).join("\n"), 'Voters') unless compact
+            sb << bold("Number of voters: #{vote[:posts].size}")
+            sb << vote[:posts].collect { |p| post_link(p.author, p.id) }.join(', ') unless compact
             sb.last << "\n"
           end
           output << sb.join("\n")
         end
-        output << "\n" + "Total No. of Voters: #{tally.total_voters}"
+        output << "\n" + "Total number of voters: #{tally.total_voters}"
         output.join "\n"
       end
 
@@ -40,7 +40,7 @@ module TallyGem::Printers
         "[hr]#{str}[/hr]"
       end
 
-      def spoiler(str, name=nil)
+      def spoiler(str, name = nil)
         if name.nil?
           "[spoiler]\n#{str}\n[/spoiler]"
         else
@@ -50,6 +50,10 @@ module TallyGem::Printers
 
       def url(str, link)
         "[url=\"#{link}\"]#{str}[/url]"
+      end
+
+      def post_link(str, id)
+        "[post=#{id}]#{str}[/post]"
       end
 
       def invisitext(str)
