@@ -67,7 +67,7 @@ module TallyGem::Adapters
     private
 
     def start_page_num
-      if @last_threadmark
+      if @last_threadmark && @start_num == 1
         begin
           feed     = Nokogiri::XML(open("#{@thread_url}/threadmarks.rss"))
           post_url = feed.xpath('//item[1]/link/text()').to_s
