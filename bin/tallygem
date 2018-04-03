@@ -4,11 +4,12 @@ require 'slop'
 require 'TallyGem'
 
 opts = Slop.parse do |o|
-  o.banner = "usage: #{$0} [options] <thread-url>"
+  o.banner = "usage: #{$PROGRAM_NAME} [options] <thread-url>"
   o.int '-s', '--start', 'the post number to start with'
   o.int '-e', '--end', 'the post number to end with'
   o.bool '-k', '--last-threadmark', 'auto-detect starting post based on last threadmark (default: true)', default: true
-  o.string '-f', '--format', 'Printer to use [BBCode(default), Plain]', default: 'BBCode'
+  o.string '-f', '--format', 'Printer to use (bbcode (default), plain)', default: 'bbcode'
+  o.string '-p', '--partition', 'Strategy used for partitioning the vote (block (default), line, recursive)', default:'block'
   o.on '-v', '--version', 'print the version' do
     puts TallyGem::VERSION
     exit
@@ -33,11 +34,28 @@ adapter = begin
   TallyGem::Adapters::Xenforo.new(opts.args.first,o)
 end
 
-tally = TallyGem::Tally.new adapter
+partition_strategy =
+  case opts[:partition].downcase
+  when 'block'
+    TallyGem::SplitBy::Block
+  when 'line'
+    TallyGem::SplitBy::Line
+  when 'retursive'
+    TallyGem::SplitBy::Recursive
+  else
+    raise ArgumentError, "Invalid vote partition strategy '#{opts[:partition]}'."
+  end
+
+printer =
+  case opts[:format].downcase
+  when 'bbcode'
+    TallyGem::Printers::BBCode
+  when 'plain'
+    TallyGem::Printers::Plain
+  else
+    raise ArgumentError, "Invalid output format '#{opts[:format]}'."
+  end
+
+tally = TallyGem::Tally.new(adapter, partition_strategy)
 tally.run
-printer = if opts[:format] == 'BBCode'
-            TallyGem::Printers::BBCode
-          else
-            TallyGem::Printers::Plain
-          end
 puts printer.render(tally)

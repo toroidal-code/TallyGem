@@ -64,7 +64,9 @@ module TallyGem
         hm[:task] = hm[:task].to_s if hm.key?(:task)
         hm[:rank] = Integer(hm[:rank]) if hm.key?(:rank)
         hm[:vote_text] = hm[:vote_text].to_s if hm.key?(:vote_text)
-        hm[:subvotes] = convert(hm[:subvotes]) if hm.key?(:subvotes) && hm[:subvotes].is_a?(Array)
+        if hm.key? :subvotes
+          hm[:subvotes] = hm[:subvotes].is_a?(Array) ? convert(hm[:subvotes]) : []
+        end
       end
     end
   end

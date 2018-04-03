@@ -44,7 +44,7 @@ module TallyGem::Printers
         if name.nil?
           "[spoiler]\n#{str}\n[/spoiler]"
         else
-          "[spoiler=#{name}]\n#{str}\n[/spoiler]"
+          "[spoiler=\"#{name}\"]\n#{str}\n[/spoiler]"
         end
       end
 
